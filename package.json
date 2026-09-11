@@ -1,0 +1,7 @@
+{
+  "name": "travel-vacation-adventure-admin-setup",
+  "private": true,
+  "scripts": { "make-admin": "node set-admin.js" },
+  "dependencies": { "firebase-admin": "^13.4.0" }
+}
+

@@ -1,20 +1,62 @@
-# Travel Vacation Adventure
+# Travel Vacation Adventure — Firebase Publishing Setup
 
-A premium, responsive travel journal built with plain HTML, CSS and JavaScript.
+This site includes a secure Firebase admin panel at `admin.html`. Administrators can create, edit, publish, unpublish and delete articles, and upload featured images.
 
-## Launch
+## 1. Create the Firebase services
 
-Upload all files to any static host (GitHub Pages, Netlify, Cloudflare Pages or cPanel). The home page is `index.html`.
+In the Firebase Console:
 
-For a quick local preview, run `python3 -m http.server 8080` in this folder and visit `http://localhost:8080`.
+1. Create a project and add a **Web app**.
+2. Enable **Authentication → Sign-in method → Email/Password**.
+3. Open **Authentication → Users** and create your admin email/password.
+4. Create a **Cloud Firestore** database.
+5. Enable **Storage**.
+6. The supplied Firebase Web app configuration is already saved in `firebase-config.js`.
 
-## Publishing posts
+Firebase's web configuration is designed to be public. Security comes from Authentication and the included rules—not from hiding the API key.
 
-Sample posts are stored in `script.js`. Edit the `posts` array to add permanent, indexable articles and add each final article URL to `sitemap.xml`. `admin.html` is included as a browser-local demo editor; connect it to a CMS/database for real multi-device publishing.
+## 2. Grant your account administrator permission
 
-## Before going live
+Custom admin claims must be set from a trusted environment, never from the website.
 
-- Replace `https://travelvacationadventure.com` if your final domain differs.
-- Download and self-host the demo imagery or replace the Unsplash URLs with your own licensed images.
-- Add analytics and Search Console verification after deployment.
-- For strongest SEO, publish each post as its own static HTML URL rather than relying only on query-string pages.
+1. Firebase Console → Project settings → Service accounts → **Generate new private key**.
+2. Save it temporarily in this folder as `serviceAccountKey.json`.
+3. Run:
+
+```bash
+npm install
+npm run make-admin -- your-email@example.com
+```
+
+4. Delete `serviceAccountKey.json` after the command succeeds. It is excluded by `.gitignore` and Firebase Hosting, but it must never be shared or uploaded.
+
+## 3. Deploy security rules and website
+
+Install the Firebase CLI, sign in and deploy:
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use --add
+firebase deploy
+```
+
+Then open `/admin.html` on your domain and sign in.
+
+The dashboard includes total/published/draft counts, article search and filtering, rich-text formatting, paragraph justification, image uploads, preview, editing, deletion and links to live articles.
+
+## Publishing workflow
+
+1. Sign in at `https://your-domain.com/admin.html`.
+2. Add the title, slug, category, excerpt and article content.
+3. Upload a featured image or paste an image URL.
+4. Add the SEO title and meta description.
+5. Select **Published** and press **Save article**.
+
+Use a blank line between paragraphs. Begin a section heading with `## `.
+
+## SEO note
+
+The six included example articles are static, fully crawlable pages. New Firebase articles load in the browser and are accessible to search engines that render JavaScript, but client-rendering does not guarantee fast or complete indexing. For strongest SEO, add server-side rendering/static generation or generate a static HTML file and sitemap entry during publishing. Do not claim guaranteed indexing; Google makes the final indexing decision.
+
+Before launch, update all `travelvacationadventure.com` canonical URLs if your domain is different and submit `/sitemap.xml` in Google Search Console.
